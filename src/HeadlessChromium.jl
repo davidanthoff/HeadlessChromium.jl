@@ -1,9 +1,9 @@
 module HeadlessChromium
 
-using HttpServer, WebSockets
-import HTTP, URIParser, Mustache, JSON
+using Printf, Sockets
 
-import Base: send, close
+using WebSockets
+import HTTP, URIParser, Mustache, JSON
 
 export Target, TimeoutError, send, close, stopChromium
 

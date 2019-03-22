@@ -65,8 +65,8 @@ function launchServer(outchan::Channel, inchan::Channel, port::Int)
     DEBUG && info("exiting outbound loop (port $port)")
   end
 
-  handler = HttpHandler() do req::Request, res::Response
-    rsp = Response(100)
+  handler = HTTP.serve() do req::HTTP.Request
+    rsp = HTTP.Response(100)
     rsp.headers["Access-Control-Allow-Origin"] = "http://localhost:8080"
     rsp.headers["Access-Control-Allow-Credentials"] = "true"
     rsp

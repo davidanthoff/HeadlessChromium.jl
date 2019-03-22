@@ -1,5 +1,5 @@
 using HeadlessChromium
-using Base.Test
+using Test
 
 # open dummy target ('about:'' page)
 

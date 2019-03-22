@@ -1,5 +1,4 @@
 using BinDeps
-using Compat
 
 import BinDeps: bindir, downloadsdir
 

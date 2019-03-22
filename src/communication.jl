@@ -9,7 +9,7 @@ end
 struct Chromium <: AbstractTarget
   chromiumWebSocket::URIParser.URI    # websocket server for the target
   targetId::String                    # target id in chromium
-  server::HttpServer.Server  # julia websocket server
+  # TODO server::HttpServer.Server  # julia websocket server
   cprocess::Base.Process     # Headless Chromium process
   outchan::Channel{String}   # Channel for outgoing messages
   inchan::Channel            # Channel for received messages
@@ -34,7 +34,10 @@ function dispatcher()
     if haskey(msg, "id")
       if haskey(chromiumHandle.id2callbacks, msg["id"])
         cb = chromiumHandle.id2callbacks[msg["id"]] # resp callback
-        isa(cb, Function) && try Base.invokelatest(cb, msg) end
+        isa(cb, Function) && try
+          Base.invokelatest(cb, msg)
+        catch 
+        end
         delete!(chromiumHandle.id2callbacks, msg["id"])
       else
         warn("undispatchable command result : $msg")
@@ -46,7 +49,10 @@ function dispatcher()
         targetId = match(r"/([^/]*)$", msg["origin"]).captures[1]
         if haskey(chromiumHandle.ws2callbacks, targetId)
           ecb = chromiumHandle.ws2callbacks[targetId]
-          isa(ecb, Function) && try Base.invokelatest(ecb, msg) end
+          isa(ecb, Function) && try
+            Base.invokelatest(ecb, msg)
+          catch
+          end
         else
           warn("undispatchable event : $msg")
         end
@@ -132,8 +138,8 @@ end
 
 Opens a new Chromium 'target', i.e. the page at the given url.
 """
-function Target(url::String, eventCallback::Union{Void,Function}=nothing)
-  if isa(chromiumHandle, Void)
+function Target(url::String, eventCallback::Union{Nothing,Function}=nothing)
+  if isa(chromiumHandle, Nothing)
     startChromium()
     sleep(3) # FIXME : do better than a timed delay
   end
@@ -158,7 +164,7 @@ end
 
 Closes the target, and frees up associated ressources.
 """
-function close(tgt::Target)
+function Base.close(tgt::Target)
   send(chromiumHandle, "Target.closeTarget", targetId=tgt.targetId)
   delete!(chromiumHandle.ws2callbacks, tgt.chromiumWebSocket)
 end
