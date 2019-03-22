@@ -5,4 +5,4 @@ deps/downloads/*
 deps/usr/*
 deps/deps.jl
 .directory
- 
+deps/build.log 
